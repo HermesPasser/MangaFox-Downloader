@@ -71,10 +71,12 @@ module MDownloader
 
 			i = 1
 			webpages.each do |wp|
-				link =  get_image_link(wp)
+				link = get_image_link(wp)
+				print($LOG += "\nDownload: #{@domain}#{wp} in #{@path_to_download}\\#{@page_name}\\")
 				download_image(link, "#{@manga_name}_#{@manga_volume}_#{@manga_chapter}_#{i.to_s}")
 				i += 1
 			end
+			print($LOG += "\nDownload complete.")
 		end	
 	end
 end

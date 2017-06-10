@@ -1,1 +1,1 @@
-Needs shoes walbabout installed
+Needs shoes installed

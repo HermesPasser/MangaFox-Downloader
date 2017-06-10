@@ -20,7 +20,7 @@ module MDownloader
 		end
 
 		def download_image(url, page_name)
-			File.open("C:\\Users\\Diogo\\Desktop\\" + page_name + ".jpg", 'wb') do |f|
+			File.open("#{@path_to_download}\\#{page_name}.jpg", 'wb') do |f|
 				f.write open("http://#{url}").read
 			end
 		end
