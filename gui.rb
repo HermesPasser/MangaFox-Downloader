@@ -5,8 +5,14 @@ Shoes.app(:title => "Mangafox Downloader #{$VERSION}", width: 570, height: 310, 
 
 	flow do
 		stack(:margin => 10, :width => 350) do  
-			para(link("About").click {load "about.rb"})
-
+			flow do 
+				inscription(link("About").click {load "about.rb"})
+				inscription("")
+				inscription(link("Update").click {update})
+				inscription("")
+				@thumb_alt = inscription("No loaded manga")
+			end
+			
 			flow do
 				para("Path \t") 
 				@edit_path = edit_line(state: "disabled", width: 120) {edit_Change}
@@ -36,7 +42,7 @@ Shoes.app(:title => "Mangafox Downloader #{$VERSION}", width: 570, height: 310, 
 				button("Cancel", width: 100) {cancel_Click and $LOG = "Aborted."}
 			end
 			
-			flow(:width => 550, :height => 85, :scroll => true) do
+			flow(:width => 550, :height => 80, :scroll => true) do
 				background white
 				border black
 				@log = inscription
@@ -45,12 +51,15 @@ Shoes.app(:title => "Mangafox Downloader #{$VERSION}", width: 570, height: 310, 
 
 		stack(:margin => 10, :width => -350) do
 			@manga_thumb = image("cover.png", :width => 200, :height => 200)
-			@thum_altbb = para("No loaded manga")
 		end
 	end
 	
 	every 1 do
 		@log.text = $LOG
+		if @thread.instance_of?(Thread) && !@thread.alive?
+			cancel_Click
+			@thread = nil
+		end
 	end
 
 	def run_in_thread
@@ -64,7 +73,7 @@ Shoes.app(:title => "Mangafox Downloader #{$VERSION}", width: 570, height: 310, 
 	def clear_search
 		interface_status(false)
 		@manga_thumb.path = "cover.png"
-		@thum_altbb.text = "No loaded manga"
+		@thumb_alt.text = "No loaded manga"
 		@edit_name.state = @search_manga.state = nil
 	end
 
@@ -84,7 +93,7 @@ Shoes.app(:title => "Mangafox Downloader #{$VERSION}", width: 570, height: 310, 
 			return
 		end
 
-		@thum_altbb.text = "Loading..."
+		@thumb_alt.text = "Loading..."
 		@edit_name.state = @search_manga.state = @edit_volume.state = @download.state = "disabled"
 
 		exits = MDownloader::Mangafox.url_page_exits?("mangafox.me", "/manga/#{@edit_name.text}/")
@@ -94,7 +103,7 @@ Shoes.app(:title => "Mangafox Downloader #{$VERSION}", width: 570, height: 310, 
 			@@mfd.manga_name = @edit_name.text
 			link = @@mfd.get_cover
 			@manga_thumb.path = link
-			@thum_altbb.text = @edit_name.text.gsub("_", " ")
+			@thumb_alt.text = @edit_name.text.gsub("_", " ")
 			@edit_chapter.state = @search_manga.state = @edit_volume.state = @download.state = @edit_name.state = nil
 		else 
 			$LOG = "Cannot find the manga."
@@ -104,7 +113,7 @@ Shoes.app(:title => "Mangafox Downloader #{$VERSION}", width: 570, height: 310, 
 
 	def download_Click
 		if @edit_path.text == "" or @edit_path.text  == nil
-			@message.text = "Invalid path."
+			$LOG = "Invalid path."
 			return
 		end
 		interface_status("disabled")
@@ -114,7 +123,6 @@ Shoes.app(:title => "Mangafox Downloader #{$VERSION}", width: 570, height: 310, 
 		@@mfd.manga_chapter = @edit_chapter.text
 		
 		@@mfd.download_chapter
-		cancel_Click
 		$LOG = "Done."
 	end
 	

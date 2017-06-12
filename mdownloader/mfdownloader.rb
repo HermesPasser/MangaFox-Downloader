@@ -52,15 +52,15 @@ module MDownloader
 			@manga_volume == "" ? vol = "" : vol = "/" + @manga_volume
 			webpages = get_page_links("/manga/#{@manga_name}#{vol}/#{@manga_chapter}/")
 			threads = []
-			i = 1
+			i = 0
 			
 			webpages.each do |wp| 
 				imagelink = get_image_link(wp)
 				threads << Thread.new{
+					i += 1
 					download_image(imagelink, "#{@manga_name}_#{@manga_volume}_#{@manga_chapter}_#{i.to_s}")
 					print($LOG += "\nDownloaded: #{imagelink} in #{@path_to_download}\\#{@page_name}")
 				}
-				i += 1
 			end
 			
 			threads.each(&:join)

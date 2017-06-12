@@ -13,6 +13,16 @@ $VERSION = "0.5"; $LOG = ""
 manga = vol = chap = path = ""
 dont_execute = false
 
+def update
+	up = Hermes::Update::UpdateByWebPage.new("mfdownloader", $VERSION, "gladiocitrico.blogspot.com.br/p/update.html")
+	if up.update_is_avaliable	
+		if up.update then puts($LOG = "Update successfully downloaded!")
+		else puts($LOG = "Could not download the update, check your connection with the internet and try again or direct download from the site.")
+		end
+	else puts($LOG = "This program is updated.")
+	end
+end
+
 def printlogo
 	puts "\t    MangaFox Downloader #{$VERSION} Command Line"
 	puts "\tby Hermes Passer (gladiocitrico.blogspot.com)"
@@ -35,16 +45,7 @@ ARGV.each do |arg|
 		printhelp
 		dont_execute = true
 	when "u:"
-		up = Hermes::Update::UpdateByWebPage.new("mfdownloader", $VERSION, "gladiocitrico.blogspot.com.br/p/update.html")
-		if up.update_is_avaliable	
-			if up.update
-				puts("Update successfully downloaded!")
-			else
-				puts("Could not download the update, check your connection with the internet and try again or direct download from the site.")
-			end
-		else
-			puts("This program is updated.")
-		end
+		update
 		dont_execute = true
 	when "m:" then manga = arg[2, arg.length]
 	when "v:" then vol 	 = arg[2, arg.length] 

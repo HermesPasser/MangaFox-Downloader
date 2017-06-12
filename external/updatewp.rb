@@ -73,7 +73,7 @@ module Hermes
 			
 			def update_is_avaliable
 				unless get_download_link == nil
-					return current_version.to_f <= get_version.to_f
+					return current_version.to_f < get_version.to_f
 				end
 				return false
 			end
