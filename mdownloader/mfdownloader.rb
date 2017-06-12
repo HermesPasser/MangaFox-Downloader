@@ -1,6 +1,7 @@
-require 'open-uri'
+require_relative 'mdownloader'
 require 'net/http'
-require './mdownloader/mdownloader'
+require 'open-uri'
+require 'thread'
 
 module MDownloader
 	class Mangafox < MangaDownloader
@@ -12,26 +13,17 @@ module MDownloader
 		
 		def get_cover
 			html = Net::HTTP.get(@domain, "/manga/#{@manga_name}/").gsub("<meta property=\"og:image\" content=\"", "~%#").gsub("\" />", "~").split("~")
-			html.each do |line|
-				if line.include?("%#") then return line.gsub("%#", "") end
-			end
+			html.each { |line| if line.include?("%#") then return line.gsub("%#", "") end}
 		end
 
-		# Recomendável que o link não tenha a pag
+		# Get the number of pages of the manga
 		def get_total_pages(page)
-			begin
-				retries ||= 0
-				# It receives a vector that in each position has a line of the html document
-				source = Net::HTTP.get(@domain, page).split(";")
-			rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError
-				if (retries += 1) < 3 then retry
-				else return -1;
-				end
-			end
-
+			source = getHtml(page).split(";")
 			total_pages = 0 
 			source.each do |pos|
-			if pos.include? "total_pages" then return pos[pos.index("=") + 1, pos.length].to_i end
+				if pos.include? "total_pages" 
+					return pos[pos.index("=") + 1, pos.length].to_i 
+				end
 			end
 		end
 
@@ -40,23 +32,14 @@ module MDownloader
 			total_pages = get_total_pages(domain_page)
 			pages = []
 			for current in 1..total_pages
-				pages << "#{domain_page}#{current}.html"
+				pages << "#{domain_page}#{current}.html" 
 			end
 			return pages
 		end
 
-		# Pega o link da imagem
+		# Get the image link
 		def get_image_link(page)
-			begin
-				retries ||= 0
-				# It receives a vector that in each position has a line of the html document
-				source = Net::HTTP.get(@domain, page)
-			rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError
-				if (retries += 1) < 3 then retry
-				else return -1;
-				end
-			end
-
+			source = getHtml(page)
 			source = source.gsub("enlarge()", "º")
 			source = source[source.index("º"), source.length]
 			source = source.gsub("http://", "$")
@@ -64,18 +47,23 @@ module MDownloader
 			return source[1, source.index("\"") - 1]
 		end
 
-		#A magika acontece aqui
+		# Download all chapters of the manga
 		def download_chapter
 			@manga_volume == "" ? vol = "" : vol = "/" + @manga_volume
 			webpages = get_page_links("/manga/#{@manga_name}#{vol}/#{@manga_chapter}/")
-
+			threads = []
 			i = 1
-			webpages.each do |wp|
-				link = get_image_link(wp)
-				print($LOG += "\nDownload: #{@domain}#{wp} in #{@path_to_download}\\#{@page_name}\\")
-				download_image(link, "#{@manga_name}_#{@manga_volume}_#{@manga_chapter}_#{i.to_s}")
+			
+			webpages.each do |wp| 
+				imagelink = get_image_link(wp)
+				threads << Thread.new{
+					download_image(imagelink, "#{@manga_name}_#{@manga_volume}_#{@manga_chapter}_#{i.to_s}")
+					print($LOG += "\nDownloaded: #{imagelink} in #{@path_to_download}\\#{@page_name}")
+				}
 				i += 1
 			end
+			
+			threads.each(&:join)
 			print($LOG += "\nDownload complete.")
 		end	
 	end

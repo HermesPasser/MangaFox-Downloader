@@ -1,3 +1,6 @@
+# require 'shoes'
+
+@@mfd = Mangafox.new("", "", "", "")
 Shoes.app(:title => "Mangafox Downloader #{$VERSION}", width: 570, height: 310, resizable: false) do
 
 	flow do
@@ -42,7 +45,7 @@ Shoes.app(:title => "Mangafox Downloader #{$VERSION}", width: 570, height: 310, 
 
 		stack(:margin => 10, :width => -350) do
 			@manga_thumb = image("cover.png", :width => 200, :height => 200)
-			@thum_alt = para("No loaded manga")
+			@thum_altbb = para("No loaded manga")
 		end
 	end
 	
@@ -61,7 +64,7 @@ Shoes.app(:title => "Mangafox Downloader #{$VERSION}", width: 570, height: 310, 
 	def clear_search
 		interface_status(false)
 		@manga_thumb.path = "cover.png"
-		@thum_alt.text = "No loaded manga"
+		@thum_altbb.text = "No loaded manga"
 		@edit_name.state = @search_manga.state = nil
 	end
 
@@ -81,7 +84,7 @@ Shoes.app(:title => "Mangafox Downloader #{$VERSION}", width: 570, height: 310, 
 			return
 		end
 
-		@thum_alt.text = "Loading..."
+		@thum_altbb.text = "Loading..."
 		@edit_name.state = @search_manga.state = @edit_volume.state = @download.state = "disabled"
 
 		exits = MDownloader::Mangafox.url_page_exits?("mangafox.me", "/manga/#{@edit_name.text}/")
@@ -91,7 +94,7 @@ Shoes.app(:title => "Mangafox Downloader #{$VERSION}", width: 570, height: 310, 
 			@@mfd.manga_name = @edit_name.text
 			link = @@mfd.get_cover
 			@manga_thumb.path = link
-			@thum_alt.text = @edit_name.text.gsub("_", " ")
+			@thum_altbb.text = @edit_name.text.gsub("_", " ")
 			@edit_chapter.state = @search_manga.state = @edit_volume.state = @download.state = @edit_name.state = nil
 		else 
 			$LOG = "Cannot find the manga."

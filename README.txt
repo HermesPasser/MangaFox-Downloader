@@ -1,1 +1,1 @@
-Needs shoes installed
+The GUI needs shoes installed but the command line can be used if shoes is not installed it.
