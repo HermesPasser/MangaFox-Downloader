@@ -59,7 +59,7 @@ module MDownloader
 				threads << Thread.new{
 					i += 1
 					download_image(imagelink, "#{@manga_name}_#{@manga_volume}_#{@manga_chapter}_#{i.to_s}")
-					print($LOG += "\nDownloaded: #{imagelink} in #{@path_to_download}\\#{@page_name}")
+					print($LOG += "\nDownloaded: #{imagelink} in #{@path_to_download}\\#{@manga_name}_#{@manga_volume}_#{@manga_chapter}_#{i.to_s}")
 				}
 			end
 			

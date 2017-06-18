@@ -124,6 +124,7 @@ Shoes.app(:title => "Mangafox Downloader #{$VERSION}", width: 570, height: 310, 
 		
 		@@mfd.download_chapter
 		$LOG = "Done."
+		search_manga_Click
 	end
 	
 	def cancel_Click
