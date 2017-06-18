@@ -128,7 +128,9 @@ Shoes.app(:title => "Mangafox Downloader #{$VERSION}", width: 570, height: 310, 
 	end
 	
 	def cancel_Click
-		@thread.kill
+		if @thread.instance_of?(Thread)
+			@thread.kill
+		end
 		interface_status(nil)		
 	end
 end
