@@ -8,7 +8,7 @@ module MDownloader
 		
 		def initialize(path, manga, vol, chapter)
 			super(path, manga, vol, chapter)
-			@domain = "mangafox.me"
+			@domain = $SITE_URL || 'mangafox.me'
 		end
 		
 		def get_cover
@@ -38,7 +38,7 @@ module MDownloader
 		end
 
 		# Get the image link
-		def get_image_link(page)
+		def get_image_link(page) # someday use regex here
 			source = getHtml(page)
 			source = source.gsub("enlarge()", "º")
 			source = source[source.index("º"), source.length]
@@ -49,7 +49,7 @@ module MDownloader
 
 		# Download all chapters of the manga
 		def download_chapter
-			@manga_volume == "" ? vol = "" : vol = "/" + @manga_volume
+			@manga_volume == '' ? vol = '' : vol = "/" + @manga_volume
 			webpages = get_page_links("/manga/#{@manga_name}#{vol}/#{@manga_chapter}/")
 			threads = []
 			i = 0
