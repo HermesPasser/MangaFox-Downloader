@@ -46,7 +46,7 @@ end
 def printhelp
 	puts "Wrong number of parameters."
 	puts "\nParameters: "
-	puts "\tFor download: m:[manga_name], v:[vol_name] (optional), c:[chapter_name], p:[destination_path]."
+	puts "\tFor download: m:[manga_name], v:[vol_name] (optional), c:[chapter_name], p:[destination_path]  l:[domain_url] (optional)"
 	puts "\tHelp: h:"
 	puts "\tUpdate: u:"
 	puts "No parameters to open gui of program."
@@ -66,6 +66,7 @@ ARGV.each do |arg|
 	when "v:" then vol 	 = arg[2, arg.length] 
 	when "c:" then chap  = arg[2, arg.length]
 	when "p:" then path  = arg[2, arg.length]
+	when "l:" then $SITE_URL = arg[2, arg.length]
 	end
 end
 
