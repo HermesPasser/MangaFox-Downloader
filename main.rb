@@ -21,11 +21,15 @@ $VERSION = '0.6'; $LOG = '';
 manga = vol = chap = path = ''
 dont_execute = false
 
-def create_manga_folder(dirname)
-	unless File.exist?("#{Dir.pwd}/#{dirname}")
-		FileUtils.mkdir_p("#{Dir.pwd}/#{dirname}")
+def create_manga_folder(*dirname)
+	file = File.join(Dir.pwd)
+	dirname.each do |dir|
+		file = File.join(file, dir)
 	end
-	return "#{Dir.pwd}/#{dirname}"
+	unless File.exist?(file)
+		FileUtils.mkdir_p(file)
+	end
+	return file
 end
 
 def update
@@ -79,7 +83,7 @@ if manga == "" && chap == "" && path == ""
 else
 	if MDownloader::Mangafox.url_page_exits?($SITE_URL, "/manga/#{manga}/")
 		if path == '' # If none path is set then create one in current program folder
-			path = create_manga_folder("manga/#{manga}/#{vol}/#{chap}")
+			path = create_manga_folder('manga', manga, vol, chap)
 		end
 
 		mfd = Mangafox.new(path, manga, vol, chap)
