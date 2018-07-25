@@ -13,22 +13,16 @@ include Hermes::Update
 $SITE_URL = 'fanfox.net'
 # --------------------------------------------------- #
 
-#aparentemente as msgs não aparecem no log da gui
-
-#debugar e ver por que o mesmo metodo esta sendo chamada varias vezes para o mesmo 
-#link, mesmo que não tenham links repetidos e ele execute em um for sem change para repetir
 $VERSION = '0.6'; $LOG = '';
-manga = vol = chap = path = ''
-dont_execute = false
 
-def create_manga_folder(*dirname)
+def remove_folder(folder)
+	FileUtils.rm_rf(folder)
+end
+
+def create_local_folder(*folders)
 	file = File.join(Dir.pwd)
-	dirname.each do |dir|
-		file = File.join(file, dir)
-	end
-	unless File.exist?(file)
-		FileUtils.mkdir_p(file)
-	end
+	folders.each { |dir| file = File.join(file, dir) }
+	File.exist?(file) ? nil : FileUtils.mkdir_p(file)
 	return file
 end
 
@@ -55,6 +49,8 @@ def printhelp
 	puts "\tUpdate: u:"
 	puts "No parameters to open gui of program."
 end
+
+manga = vol = chap = path = ''; dont_execute = false
 
 printlogo
 ARGV.each do |arg|
@@ -83,7 +79,7 @@ if manga == "" && chap == "" && path == ""
 else
 	if MDownloader::Mangafox.url_page_exits?($SITE_URL, "/manga/#{manga}/")
 		if path == '' # If none path is set then create one in current program folder
-			path = create_manga_folder('manga', manga, vol, chap)
+			path = create_local_folder('manga', manga, vol, chap)
 		end
 
 		mfd = Mangafox.new(path, manga, vol, chap)

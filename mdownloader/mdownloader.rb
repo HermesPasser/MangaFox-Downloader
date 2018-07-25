@@ -1,4 +1,4 @@
-# Base class for all manga downloader
+# (ver.3) Base class for all manga downloader
 require 'open-uri'
 require 'net/http'
  
@@ -16,7 +16,12 @@ module MDownloader
         end
      
         def self.url_page_exits?(domain, page)
-            Net::HTTP.get(domain, page) != ""
+		    begin
+				return Net::HTTP.get(domain, page) != ""
+			rescue Errno::ECONNREFUSED
+				puts 'MDownloader::MangaDownloader: Errno::ECONNREFUSED: Failed to open TCP connection to :80'
+				return nil
+            end
         end
          
         def getHtml(page)

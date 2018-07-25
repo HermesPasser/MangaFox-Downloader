@@ -12,8 +12,13 @@ module MDownloader
 		end
 		
 		def get_cover
-			html = Net::HTTP.get(@domain, "/manga/#{@manga_name}/").gsub("<meta property=\"og:image\" content=\"", "~%#").gsub("\" />", "~").split("~")
-			html.each { |line| if line.include?("%#") then return line.gsub("%#", "") end}
+			id = Net::HTTP.get(@domain, "/manga/#{@manga_name}/").match(/(?<=var sid=).*(?<=;)/).to_s
+			
+			unless id == nil
+				return "s.fanfox.net/store/manga/#{id[0, id.length - 1]}/cover.jpg"
+			end
+			puts "MDownloader::Mangafox: Cannot found the cover."
+			return nil
 		end
 
 		# Get the number of pages of the manga
