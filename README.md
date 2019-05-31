@@ -6,4 +6,4 @@ Type ``"ruby main.rb h:"`` for help in command line or check the [website](https
 **Note:** the program may not work if you don't open in Administrator mode. 
 
 ## This program is not supported anymore
-But you can download pretty much everything on the others sites using [HMD](https://github.com/hermespasser/hermes-manga-download).
+But you can download pretty much everything on the others sites using [HMD](https://github.com/hermespasser/hermes-manga-downloader).
